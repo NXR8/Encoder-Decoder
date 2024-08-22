@@ -1,24 +1,19 @@
-from random import choice
+import itertools
 
-def ny_encode(data):
-    encode = ''
-    list1 = ',./'
-    list2 = '!@#$%^&*()+=,./][}{'
-    list3 = '!@#$%^&*()+=,./123}45]67[890?{'
-    list4 = '1234567890'
-    
-    for i in range(data):
-        encode += choice(list1)
-        encode += choice(list2)
-        encode += choice(list3)
-        encode += choice(list4)
-      
-    return encode
-  
-while True:
-    ny = ny_encode(1)
-    print(ny)
-    with open('encod.txt', 'a') as f:
-        f.write(ny)
-        f.write('\n')
-        f.close
+# Define the character lists
+list1 = ',./'
+list2 = '!@#$%^&*()+=,./][}{'
+list3 = '!@#$%^&*()+=,./123}45]67[890?{'
+list4 = '1234567890'
+
+# Generate all possible combinations using itertools.product
+all_combinations = itertools.product(list1, list2, list3, list4)
+
+# Open the file in write mode
+with open('encod.txt', 'w') as f:
+    for combination in all_combinations:
+        # Join the tuple to form the encoded string
+        encoded_string = ''.join(combination)
+        # Write the encoded string to the file
+        f.write(encoded_string + '\n')
+        print(encoded_string)  # Optional: print to console
