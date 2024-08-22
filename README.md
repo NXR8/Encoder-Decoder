@@ -74,3 +74,5 @@ This project is licensed under the MIT License.
 ### Contact
 
 For any inquiries or support, please contact [@NXR81](https://t.me/NXR81) or [@O0O0I](https://t.me/O0O0I) on Telegram.
+
+To try out the bot, visit the following link: [NY_Encoding_bot](https://t.me/NY_Encoding_bot)
