@@ -1,78 +1,133 @@
-## README.md
+# Telegram Encryption Bot
 
-### Overview
+This Telegram bot performs encryption and decryption of messages using a custom encoding scheme. It also handles basic commands and provides error reporting.
 
-This project is a Telegram bot built using the `telebot` library. The bot offers multiple functionalities, including encoding and decoding text with a custom cipher, handling basic bot commands, and fetching the external IP address of the server hosting the bot.
+## Overview
 
-### Features
+The bot supports the following commands:
+- **/ny**: Encrypts the provided text or replies to a message.
+- **/text**: Decrypts the provided text or replies to a message.
+- **/start**: Provides a brief introduction and example usage.
+- **/help**: Provides help and directs users to contact support.
 
-1. **Text Encoding (`/ny`)**: 
-   - Encodes a message or a reply to a message using a custom encoding scheme.
-   
-2. **Text Decoding (`/text`)**: 
-   - Decodes a previously encoded message back to its original form.
+## Code Explanation
 
-5. **Help Command (`/help`)**: 
-   - Directs users to contact the bot developer for support.
+### Imports
 
-6. **Start Command (`/start`)**: 
-   - Welcomes new users and provides instructions on how to use the bot.
+```python
+import time
+import telebot, base64
+from telebot import types
+import logging
+```
+- **time**: Used for introducing delays in case of errors.
+- **telebot**: The library used to interact with the Telegram API.
+- **base64**: Used for encoding and decoding messages.
+- **logging**: Used for logging errors.
 
-### Installation
+### Encoding and Decoding
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/NXR8/encoder-decoder
-   cd encoder-decoder
-   ```
+```python
+encoded = {
+  "0": ".$.0", "1": "/@]5", "2": ".#(7", ...
+}
 
-2. **Install dependencies:**
-   Ensure you have Python installed, then install the required libraries:
-   ```bash
-   pip install pyTelegramBotAPI requests
-   ```
+decoded = {y: x for x, y in encoded.items()}
 
-3. **Set up the bot token:**
-   Replace the placeholder `token` in the code with your own Telegram bot token.
+encode = lambda text: "".join(
+  [encoded[x] for x in base64.b16encode(text.encode()).decode()])
 
-4. **Run the bot:**
-   Start the bot by executing the script:
-   ```bash
-   python ENCODING_BOT.py
-   ```
+def decode(text):
+  data = []
+  nm = 0
+  for x in range(len(text) // 4):
+    data.append(text[nm:nm + 4])
+    nm += 4
+  return base64.b16decode("".join([decoded[x] for x in data]).encode()).decode()
+```
+- **encoded** and **decoded**: Dictionaries for encoding and decoding characters.
+- **encode**: Lambda function to encode text using the `encoded` dictionary and base64 encoding.
+- **decode**: Function to decode the text by reversing the encoding process.
 
-### Configuration
+### Bot Configuration
 
-- **Telegram Bot Token**: 
-  - The bot token should be set in the `token` variable.
-  
-- **Admin User ID**: 
-  - Set the `ID` to the Telegram user ID of the bot's administrator to receive error reports and certain commands.
+```python
+token = "<your_telegram_bot_token>"
+bot = telebot.TeleBot(token)
+ID = <your_ID>
+```
+- **token**: Replace `<your_telegram_bot_token>` with your actual Telegram bot token.
+- **ID**: Replace `<your_ID>` with your Telegram user ID for error reporting.
 
-### Usage
+### Command Handlers
 
-- **Encoding a Message:**
-  - Send `/ny <your_message>` to the bot, and it will return the encoded version.
-  
-- **Decoding a Message:**
-  - Send `/text <encoded_message>` to the bot, and it will return the decoded version.
-  
-### Error Handling
+- **/ny**: Encrypts the message or the reply to a message.
+- **/text**: Decrypts the message or the reply to a message.
+- **/start**: Sends a welcome message and usage examples.
+- **/help**: Provides contact information for support.
 
-- The bot handles errors by sending a message to the admin user with details about the error and the user who triggered it.
-  
-- If the bot encounters an issue during its execution, it logs the error and retries the operation after a delay.
+### Example Command Handlers
 
-### Contributing
+#### Encrypt Message
 
-Feel free to submit issues or pull requests if you would like to contribute to this project.
+```python
+@bot.message_handler(commands=["ny"])
+def ny(message):
+  try:
+    msg = message.text
+    msg = msg.replace("/ny", "").strip()
+    if message.reply_to_message:
+        replied_message = message.reply_to_message.text
+        msg = encode(replied_message)
+    else:
+        text_message = message.text.replace("/ny", "").strip()
+        msg = encode(text_message)
+    bot.reply_to(message, msg, reply_markup=markup)
+  except:
+    # Error handling
+    ...
+```
 
-### License
+#### Decrypt Message
 
-This project is licensed under the MIT License. 
+```python
+@bot.message_handler(commands=["text"])
+def toText(message):
+  try:
+    msg = message.text
+    msg = msg.replace("/text", "").strip()
+    if message.reply_to_message:
+        replied_message = message.reply_to_message.text
+        msg = decode(replied_message)
+    else:
+        text_message = message.text.replace("/text", "").strip()
+        msg = decode(text_message)
+    bot.reply_to(message, msg, reply_markup=markup)
+  except:
+    # Error handling
+    ...
+```
 
-### Contact
+### Running the Bot
 
-For any inquiries or support, please contact [@NXR81](https://t.me/NXR81) or [@O0O0I](https://t.me/O0O0I) on Telegram.
+To run the bot, execute the script:
+
+```bash
+python your_script_name.py
+```
+
+The bot will start and listen for incoming messages.
+
+## Error Handling
+
+The bot logs errors and sends error reports to the specified Telegram user ID. If an error occurs, it will try to handle it gracefully and log the relevant information.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contact
+
+For support or inquiries, contact [@NXR81](https://t.me/NXR81) or [@O0O0I](https://t.me/O0O0I) on Telegram.
 
 To try out the bot, visit the following link: [NY_Encoding_bot](https://t.me/NY_Encoding_bot)
