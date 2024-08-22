@@ -113,7 +113,7 @@ def toText(message):
 To run the bot, execute the script:
 
 ```bash
-python your_script_name.py
+python ENCODING_BOT.py
 ```
 
 The bot will start and listen for incoming messages.
